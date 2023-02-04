@@ -44,28 +44,24 @@ print(getEnvironmentVar("SECRET1") ?? "nothing")
 
 //-------------------------------------------------- mini dotEnv handling
 func loadEnvironmentVars() throws {
-    //cleans out the comments could also "grep -v '^#' .env | xargs" 
-    //if wanting a different format to parse. 
-    let command = "grep -v '^#' .env"  
-    let task = Process()
-    let pipe = Pipe()
-    
-    task.standardOutput = pipe
-    task.standardError = pipe
-    task.arguments = ["-c", command]
-    task.executableURL = URL(fileURLWithPath: "/bin/zsh") //<--updated
-    task.standardInput = nil
 
-    try task.run() //<--updated
-    
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    let output = String(data: data, encoding: .utf8)!
+    let url = URL(fileURLWithPath: ".env")
+    guard let envString = try? String(contentsOf: url) else {
+       fatalError("no env file data")
+    }
 
-    let dictionary = parseEnvironmentVars(string: output)
+    let results = envString.trimmingCharacters(in: .newlines).split(separator: "\n").map({ $0.split(separator: "=")})
 
-    for (key, value) in dictionary {
-        print(key, value)
-        setEnvironment(key: key, value: value, overwrite: true)
+    for result in results {
+        guard (result.count) > 0 && result[0].prefix(1) != "#" else {
+            //print("comment or empty:", result)
+            continue
+        }
+        if result.count == 2  {
+            setEnvironment(key: String(result[0]), value: String(result[1].trimmingCharacters(in: CharacterSet(charactersIn:"\"\'"))), overwrite: true)
+        } else {
+            print("what's this?", result)
+        }
     }
 }
 
@@ -87,6 +83,14 @@ do {
     } else {
         print("I don't know the secret.")
     }
+
+    if let anotherValue = ProcessInfo.processInfo.environment["ANOTHER"] {
+        print(anotherValue)
+    } else {
+        print("I don't know the other secret.")
+    }
+
+
 }
 catch {
     print("\(error)") //handle or silence the error here
