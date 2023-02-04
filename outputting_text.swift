@@ -34,5 +34,6 @@ print("Hello, world!")
 
 
 /// print colorful text using ANSI escape codes
+/// https://en.wikipedia.org/wiki/ANSI_escape_code
 print("\u{1b}[31;1m\u{1b}[40;1m\("Hello, world!")\u{1b}[m")
 print("\u{1b}[32;1m\("Hello, world!")\u{1b}[m")
