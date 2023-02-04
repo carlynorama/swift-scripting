@@ -54,8 +54,7 @@ func loadDotEnv() throws {
         .trimmingCharacters(in: .newlines)
         .split(separator: "\n")
         .lazy 
-        .filter({$0.contains("=")})
-        .filter({$0.prefix(1) != "#"})
+        .filter({$0.prefix(1) != "#"})  //is comment
         .map({ $0.split(separator: "=").map({String($0.trimmingCharacters(in: CharacterSet(charactersIn:"\"\'")))}) })
         .forEach({  addToEnv(result: $0) })
 
@@ -63,7 +62,7 @@ func loadDotEnv() throws {
         if result.count == 2  {
             setEnvironment(key: result[0], value: result[1], overwrite: true)
         } else {
-            //item would of had to have contained more than 1 "=" I'd like to know about that for now. 
+            //item would of had to have contained more than 1 "=" or none at all. I'd like to know about that for now. 
             print("Failed dotenv add: \(result)") 
         }
     }
