@@ -43,40 +43,34 @@ setEnvironment(key: "SECRET1", value: "(whispers I cant hear)", overwrite: true)
 print(getEnvironmentVar("SECRET1") ?? "nothing")
 
 //-------------------------------------------------- mini dotEnv handling
-func loadEnvironmentVars() throws {
+func loadDotEnv() throws {
 
     let url = URL(fileURLWithPath: ".env")
     guard let envString = try? String(contentsOf: url) else {
        fatalError("no env file data")
     }
 
-    let results = envString.trimmingCharacters(in: .newlines).split(separator: "\n").map({ $0.split(separator: "=")})
+    envString
+        .trimmingCharacters(in: .newlines)
+        .split(separator: "\n")
+        .lazy 
+        .filter({$0.contains("=")})
+        .filter({$0.prefix(1) != "#"})
+        .map({ $0.split(separator: "=").map({String($0.trimmingCharacters(in: CharacterSet(charactersIn:"\"\'")))}) })
+        .forEach({  addToEnv(result: $0) })
 
-    for result in results {
-        guard (result.count) > 0 && result[0].prefix(1) != "#" else {
-            //print("comment or empty:", result)
-            continue
-        }
+    func addToEnv(result:Array<String>) {
         if result.count == 2  {
-            setEnvironment(key: String(result[0]), value: String(result[1].trimmingCharacters(in: CharacterSet(charactersIn:"\"\'"))), overwrite: true)
+            setEnvironment(key: result[0], value: result[1], overwrite: true)
         } else {
-            print("what's this?", result)
+            //item would of had to have contained more than 1 "=" I'd like to know about that for now. 
+            print("Failed dotenv add: \(result)") 
         }
     }
 }
 
-func parseEnvironmentVars(string:String) -> Dictionary<String, String> {
-    var dictionary:Dictionary<String, String> = [:]
-    let results = string.trimmingCharacters(in: .newlines).split(separator: "\n").map({ $0.split(separator: "=")})
-    for result in results {
-        dictionary[String(result[0])] = String(result[1])
-    }
-    return dictionary
-} 
-
-
 do {
-    try loadEnvironmentVars()
+    try loadDotEnv()
     
     if let value = ProcessInfo.processInfo.environment["SECRET"] {
         print(value)
@@ -89,8 +83,6 @@ do {
     } else {
         print("I don't know the other secret.")
     }
-
-
 }
 catch {
     print("\(error)") //handle or silence the error here
