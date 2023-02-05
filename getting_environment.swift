@@ -53,7 +53,7 @@ func loadDotEnv() throws {
     envString
         .trimmingCharacters(in: .newlines)
         .split(separator: "\n")
-        .lazy 
+        .lazy //may or maynot save anything
         .filter({$0.prefix(1) != "#"})  //is comment
         .map({ $0.split(separator: "=").map({String($0.trimmingCharacters(in: CharacterSet(charactersIn:"\"\'")))}) })
         .forEach({  addToEnv(result: $0) })
