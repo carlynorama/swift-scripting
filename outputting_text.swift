@@ -21,7 +21,6 @@ final class StandardErrorOutputStream: TextOutputStream {
 var outputStream = StandardErrorOutputStream()
 print("This is also an error", to: &outputStream)
 
-
 /// clears the console (@NOTE: won't work in Xcode)
 func clear() {
     print("\u{1B}[2J")
