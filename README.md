@@ -10,7 +10,6 @@ NOT using the package manager.
 
 - https://theswiftdev.com/how-to-build-better-command-line-apps-and-tools-using-swift/
 - https://rderik.com/blog/using-swift-for-scripting/
-- [Sundell 2017 Swiss Mobile Dev scripting talk](https://www.youtube.com/watch?v=PFdh5G3BJqM)
 - Making A Real Tool: https://rayfix.org/2021/04/21/argument_parsing.html
 - list of articles https://github.com/artemnovichkov/Swift-For-Scripting
 - Note to self: explore differences between `ConsoleKit` (vapor) and `ArgumentParser` (Apple)
